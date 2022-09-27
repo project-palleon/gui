@@ -1,5 +1,7 @@
 imgui==1.4.1
-numpy==1.23.2
+numpy~=1.23.3
 Pillow==9.2.0
 bson==0.5.10
 tomli==2.0.1
+glfw~=2.5.4
+palleon~=1.0a1

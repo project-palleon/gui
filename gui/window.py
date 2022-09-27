@@ -7,19 +7,23 @@ from imgui.integrations.glfw import GlfwRenderer
 
 
 class Window:
-    def __init__(self, width, height, window_name, plugins, image_drawers):
+    def __init__(self, width, height, window_name, plugin_mgr, image_drawers):
         self._window_name = window_name
         self._height = int(height)
         self._width = int(width)
-        self._plugins = plugins
+        self._plugin_mgr = plugin_mgr
         self._image_drawers = image_drawers
 
     def _draw_loop(self):
-        for v in self._image_drawers.values():
-            v.draw()
+        for input_source, plugins in self._plugin_mgr.plugins_by_input_source.items():
+            imgui.begin(input_source, True)
 
-        for plugin in self._plugins:
-            plugin.draw()
+            if input_source in self._image_drawers:
+                self._image_drawers[input_source].draw()
+
+            for plugin in plugins:
+                plugin.draw()
+            imgui.end()
 
     def loop(self):
         window = self.impl_glfw_init()
@@ -28,7 +32,7 @@ class Window:
 
         menus = defaultdict(list)
 
-        for plugin in self._plugins:
+        for plugin in self._plugin_mgr.plugins:
             for menu_name, fn in plugin.main_menu_bar().items():
                 menus[menu_name].append(fn)
 

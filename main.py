@@ -2,11 +2,11 @@ from io import BytesIO
 from threading import Thread
 
 from PIL import Image
+from palleon import SimpleSocket
 
 from config import Config
 from gui import Window, ImageRenderer
-from plugins import plugins
-from simple_socket import SimpleSocket
+from plugins import plugin_mgr
 
 config = Config.from_toml("config.toml")
 
@@ -23,19 +23,22 @@ def receive():
             updates = s.recv_bson()
 
             if len(updates["data"]) > 0:
-                # todo build lookup dict cuz this is inefficient
-                for (source, timestamp, data) in updates["data"]:
-                    for plugin in plugins:
-                        if source in plugin.keys:
-                            plugin.update(source, timestamp, data)
+                for (data_source_name, input_source_name, timestamp, data) in updates["data"]:
+                    plugin_mgr.update(data_source_name, input_source_name, timestamp, data)
 
             if len(updates["images"]) > 0:
-                for (timestamp, source, raw_img) in updates["images"]:
-                    if source not in image_renderers:
-                        image_renderers[source] = ImageRenderer()
+                for image_wrapper in updates["images"]:
+                    input_source_name = image_wrapper["input_source"]
 
-                    parsed_image = Image.open(BytesIO(raw_img))
-                    image_renderers[source].update_from_image(parsed_image, (timestamp, source))
+                    if input_source_name not in image_renderers:
+                        image_renderers[input_source_name] = ImageRenderer()
+
+                    other_metadata = {
+                        "timestamp": image_wrapper["timestamp"],
+                    }
+
+                    parsed_image = Image.open(BytesIO(image_wrapper["data"]))
+                    image_renderers[input_source_name].update_from_image(parsed_image, input_source_name, other_metadata)
 
 
 def main():
@@ -44,7 +47,7 @@ def main():
     t.daemon = True
     t.start()
 
-    g = Window(1280, 720, "palleon", plugins, image_renderers)
+    g = Window(1280, 720, "palleon", plugin_mgr, image_renderers)
     g.loop()
 
 

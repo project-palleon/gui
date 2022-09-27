@@ -24,12 +24,16 @@ Then add the created plugin class to the plugins array in `plugins/__init__.py`.
 4. the plugins draw method is called such that they can show whatever they want
 5. go to step 2
 
+## Improvements
+
+1. load the plugins dynamically without needing to include them in the source code package structure
+
 ## Installation
 
-1. install python 3 (I am using version 3.10, I have not tested prior version)
+1. install python 3 (I am using version 3.10, I have not tested prior versions)
 2. install requirements from requirements.txt
 3. start core
-4. python main.py
+4. `python main.py`
 
 ## Screenshot
 

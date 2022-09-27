@@ -23,22 +23,24 @@ class ImageRenderer:
         self.rgba_data: Optional[bytes] = None
         self.size: Optional[(int, int)] = None
         self.metadata: Any = None
+        self.source = None
 
         self.changed: bool = False
         self.changed_lock = Lock()
 
         self._texture_id: Optional[numpy.uint32] = None
 
-    def update_from_image(self, image: Image.Image, metadata=None):
+    def update_from_image(self, image: Image.Image, source, metadata=None):
         size = (image.width, image.height)
         rgba_data = get_rgba_pixels(image)
-        self.update(rgba_data, size, metadata)
+        self.update(rgba_data, size, source, metadata)
 
-    def update(self, data, size, metadata=None):
+    def update(self, data, size, source, metadata=None):
         with self.rgba_data_lock:
             self.size = size
             self.rgba_data = data
             self.metadata = metadata
+            self.source = source
             with self.changed_lock:
                 self.changed = True
 

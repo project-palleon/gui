@@ -13,7 +13,7 @@ class ActivityPlugin(Plugin):
         self.plot_values = array("f", [0 for _ in range(100)])
         self.plot_values_lock = Lock()
 
-    def update(self, data_src, timestamp, data):
+    def update(self, data_src, input_src, timestamp, data):
         with self.plot_values_lock:
             self.plot_values.pop(0)
             self.plot_values.append(data["changed"])
@@ -24,6 +24,8 @@ class ActivityPlugin(Plugin):
                 "Aktivität",
                 self.plot_values,
                 graph_size=(0, 50),  # = (autoscale width, 50px height)
+                scale_min=0,
+                scale_max=1,
             )
 
     def main_menu_bar(self):

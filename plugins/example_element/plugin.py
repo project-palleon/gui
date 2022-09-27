@@ -5,9 +5,9 @@ from plugins.plugin_abc import Plugin
 
 class ExampleElementPlugin(Plugin):
     def __init__(self):
-        super().__init__([])
+        super().__init__(["DATA-PLUGINS-TO-RECEIVE-IN-UPDATE"])
 
-    def update(self, data_src, timestamp, data):
+    def update(self, data_src, input_src, timestamp, data):
         pass
 
     def draw(self):

@@ -12,7 +12,7 @@ class Plugin(ABC):
         return self.__keys
 
     @abstractmethod
-    def update(self, data_src: str, timestamp: datetime, data: dict[str, Any]):
+    def update(self, data_src: str, input_src: str, timestamp: datetime, data: dict[str, Any]):
         ...
 
     @abstractmethod
